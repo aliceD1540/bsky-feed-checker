@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bluesky フィードチェッカー</title>
+</head>
+<body>
+    <h1>Bluesky フィードチェッカー 登録フォーム</h1>
+    <form action="/submit" method="post">
+        <label for="account">Bluesky account:</label>
+        <input type="text" id="account" name="account"><br><br>
+        <label for="app_pass">App Password:</label>
+        <input type="password" id="app_pass" name="app_pass"><br><br>
+        <label for="feed_url">Feed URL:</label>
+        <input type="text" id="feed_url" name="feed_url"><br><br>
+        <input type="submit" value="Submit">
+    </form>
+    <p class="error">{{ message }}</p>
+    <p>
+        フォームに情報を登録する前に、{{ system_user }} とチャットができる状態であることの確認をお願いします。<br/>
+        具体的には以下のいずれかの状態である必要があります。<br/>
+        動作開始後は変更いただいて構いません。<br/>
+
+        <ul>
+            <li>パターンA（推奨）
+                <ul>
+                    <li>{{ system_user }} をフォローしている</li>
+                    <li>チャット許可が「フォローしているユーザ」</li>
+                </ul>
+            </li>
+            <li>パターンB
+                <ul>
+                    <li>チャット許可が「全員」</li>
+                </ul>
+            </li>
+        </ul>
+    </p>
+    
+    
+</body>
+</html>
