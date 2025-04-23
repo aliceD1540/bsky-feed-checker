@@ -15,6 +15,13 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 
+import { D1Database } from '@cloudflare/workers-types'; // Ensure you have the correct type for D1
+
+// Define the Env interface to include the D1 binding
+interface Env {
+	DB: D1Database;
+}
+
 export default {
 	async fetch(req) {
 		const url = new URL(req.url);
@@ -26,15 +33,41 @@ export default {
 	// The scheduled handler is invoked at the interval set in our wrangler.jsonc's
 	// [[triggers]] configuration.
 	async scheduled(event, env, ctx): Promise<void> {
-		// A Cron Trigger can make requests to other endpoints on the Internet,
-		// publish to a Queue, query a D1 Database, and much more.
-		//
-		// We'll keep it simple and make an API call to a Cloudflare API:
+		// Initialize the database
+		console.log('env.DB:', env.DB);
+		await initializeDatabase(env.DB);
+
+		// Example API call
 		let resp = await fetch('https://api.cloudflare.com/client/v4/ips');
 		let wasSuccessful = resp.ok ? 'success' : 'fail';
 
-		// You could store this result in KV, write to a D1 Database, or publish to a Queue.
-		// In this template, we'll just log the result:
 		console.log(`trigger fired at ${event.cron}: ${wasSuccessful}`);
 	},
 } satisfies ExportedHandler<Env>;
+
+/**
+ * Initializes the database by checking for required tables and creating them if they don't exist.
+ */
+async function initializeDatabase(db: D1Database): Promise<void> {
+	// Check if the table exists
+	const tableCheck = await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='feeds';").first();
+
+	if (!tableCheck) {
+		// Create the table if it doesn't exist
+		await db
+			.prepare(
+				`
+            CREATE TABLE feeds (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                url TEXT NOT NULL,
+                last_checked TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `
+			)
+			.run();
+
+		console.log('Table "feeds" created successfully.');
+	} else {
+		console.log('Table "feeds" already exists.');
+	}
+}

@@ -11,10 +11,16 @@
 		"enabled": true
 	},
 	"triggers": {
-		"crons": [
-			"* * * * *"
-		]
-	}
+		"crons": ["* * * * *"]
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "bsky-feedchecker-db",
+			"database_id": "54af7eba-6f75-4118-99d3-61bfdd8bc397"
+		}
+	]
+
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
