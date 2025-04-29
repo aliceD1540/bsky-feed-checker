@@ -17,10 +17,14 @@
 
 import { D1Database } from '@cloudflare/workers-types'; // Ensure you have the correct type for D1
 import { DOMParser } from 'xmldom';
+import * as db from './db';
+import * as bsky_utils from './bsky_utils';
 
 // Define the Env interface to include the D1 binding
 interface Env {
 	DB: D1Database;
+	BSKY_USERNAME: string;
+	BSKY_APP_PASSWORD: string;
 }
 
 export default {
@@ -36,7 +40,9 @@ export default {
 	async scheduled(event, env, ctx): Promise<void> {
 		// Initialize the database
 		console.log('env.DB:', env.DB);
-		await initializeDatabase(env.DB);
+		console.log('BSKY_USERNAME:', env.BSKY_USERNAME);
+		await bsky_utils.login(env.BSKY_USERNAME, env.BSKY_APP_PASSWORD);
+		await db.initializeDatabase(env.DB);
 
 		// Example API call
 		// let resp = await fetch('https://api.cloudflare.com/client/v4/ips');
@@ -50,7 +56,7 @@ export default {
 		}
 		const xmlText = await response.text();
 
-		console.log(xmlText);
+		// console.log(xmlText);
 
 		// console.log(response.body);
 
@@ -63,37 +69,22 @@ export default {
 			const title = items[i].getElementsByTagName('title')[0].textContent;
 			const link = items[i].getElementsByTagName('link')[0].textContent;
 			const mediaThumbnail = items[i].getElementsByTagName('media:thumbnail')[0]?.textContent;
+			const pubDate = items[i].getElementsByTagName('pubDate')[0]?.textContent
+				? parseDate(items[i].getElementsByTagName('pubDate')[0].textContent!)
+				: null;
 
-			console.log(`Title: ${title}, Link: ${link}, Media Thumbnail: ${mediaThumbnail}`);
+			// console.log(`Title: ${title}, Link: ${link}, Media Thumbnail: ${mediaThumbnail}, Publication Date: ${pubDate}`);
 		}
 
 		// console.log(`trigger fired at ${event.cron}: ${wasSuccessful}`);
 	},
 } satisfies ExportedHandler<Env>;
 
-/**
- * Initializes the database by checking for required tables and creating them if they don't exist.
- */
-async function initializeDatabase(db: D1Database): Promise<void> {
-	// Check if the table exists
-	const tableCheck = await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='feeds';").first();
-
-	if (!tableCheck) {
-		// Create the table if it doesn't exist
-		await db
-			.prepare(
-				`
-            CREATE TABLE feeds (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                url TEXT NOT NULL,
-                last_checked TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-        `
-			)
-			.run();
-
-		console.log('Table "feeds" created successfully.');
-	} else {
-		console.log('Table "feeds" already exists.');
+// 日付を文字列からDateオブジェクトに変換
+function parseDate(dateString: string): Date {
+	const date = new Date(dateString);
+	if (isNaN(date.getTime())) {
+		throw new Error(`Invalid date string: ${dateString}`);
 	}
+	return date;
 }

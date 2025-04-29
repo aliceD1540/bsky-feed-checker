@@ -37,8 +37,6 @@
 		"strict": true,
 
 		/* Skip type checking all .d.ts files. */
-		"skipLibCheck": true,
-
-		"typeRoots": ["./types", "./node_modules/@types"]
+		"skipLibCheck": true
 	}
 }

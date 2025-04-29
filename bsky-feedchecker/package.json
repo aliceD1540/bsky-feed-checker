@@ -16,7 +16,7 @@
 		"wrangler": "^4.12.0"
 	},
 	"dependencies": {
-		"dom-parser": "^1.1.5",
+		"@atproto/api": "^0.15.5",
 		"xmldom": "^0.6.0"
 	}
 }
