@@ -16,6 +16,7 @@
  */
 
 import { D1Database } from '@cloudflare/workers-types'; // Ensure you have the correct type for D1
+import { DOMParser } from 'xmldom';
 
 // Define the Env interface to include the D1 binding
 interface Env {
@@ -38,10 +39,35 @@ export default {
 		await initializeDatabase(env.DB);
 
 		// Example API call
-		let resp = await fetch('https://api.cloudflare.com/client/v4/ips');
-		let wasSuccessful = resp.ok ? 'success' : 'fail';
+		// let resp = await fetch('https://api.cloudflare.com/client/v4/ips');
+		// let wasSuccessful = resp.ok ? 'success' : 'fail';
 
-		console.log(`trigger fired at ${event.cron}: ${wasSuccessful}`);
+		// RSSを取得
+		const rssUrl = 'https://note.com/project_grimoire/rss';
+		const response = await fetch(rssUrl);
+		if (!response.ok) {
+			throw new Error(`Failed to fetch RSS feed: ${response.statusText}`);
+		}
+		const xmlText = await response.text();
+
+		console.log(xmlText);
+
+		// console.log(response.body);
+
+		// xmltextをパースしてtitleとlinkとmedia:thumbnailを取得
+		const parser = new DOMParser();
+		const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+		const items = xmlDoc.getElementsByTagName('item');
+
+		for (let i = 0; i < items.length; i++) {
+			const title = items[i].getElementsByTagName('title')[0].textContent;
+			const link = items[i].getElementsByTagName('link')[0].textContent;
+			const mediaThumbnail = items[i].getElementsByTagName('media:thumbnail')[0]?.textContent;
+
+			console.log(`Title: ${title}, Link: ${link}, Media Thumbnail: ${mediaThumbnail}`);
+		}
+
+		// console.log(`trigger fired at ${event.cron}: ${wasSuccessful}`);
 	},
 } satisfies ExportedHandler<Env>;
 
