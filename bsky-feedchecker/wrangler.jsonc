@@ -23,8 +23,7 @@
 	"kv_namespaces": [
 		{
 			"binding": "KV",
-			"id": "bsky-feedchecker-kv",
-			"preview_id": "46f5a04f2e954f539ec383e0029274f1"
+			"id": "46f5a04f2e954f539ec383e0029274f1"
 		}
 	]
 
