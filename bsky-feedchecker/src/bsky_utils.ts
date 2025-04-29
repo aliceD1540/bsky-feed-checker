@@ -8,7 +8,7 @@ const agent = new AtpAgent({
 });
 
 // Blueskyにログインする
-export async function login(bsky_username: string, bsky_app_password: string, session_str?: string): Promise<void> {
+export async function login(bsky_username: string, bsky_app_password: string, session_str?: string | null): Promise<string | void> {
 	if (session_str) {
 		// session_strをAtpSessionData型に変換
 		const oldSessionData: AtpSessionData = {
@@ -28,6 +28,9 @@ export async function login(bsky_username: string, bsky_app_password: string, se
 		password: bsky_app_password,
 	});
 	console.log('session:', agent.session);
+
+	// セッションをstringに変換してreturn
+	return JSON.stringify(agent.session);
 }
 
 // セッションを復元する

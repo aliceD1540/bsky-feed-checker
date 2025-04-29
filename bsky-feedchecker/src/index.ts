@@ -16,6 +16,7 @@
  */
 
 import { D1Database } from '@cloudflare/workers-types'; // Ensure you have the correct type for D1
+import { KVNamespace } from '@cloudflare/workers-types';
 import { DOMParser } from 'xmldom';
 import * as db from './db';
 import * as bsky_utils from './bsky_utils';
@@ -23,6 +24,7 @@ import * as bsky_utils from './bsky_utils';
 // Define the Env interface to include the D1 binding
 interface Env {
 	DB: D1Database;
+	KV: KVNamespace;
 	BSKY_USERNAME: string;
 	BSKY_APP_PASSWORD: string;
 }
@@ -41,7 +43,13 @@ export default {
 		// Initialize the database
 		console.log('env.DB:', env.DB);
 		console.log('BSKY_USERNAME:', env.BSKY_USERNAME);
-		await bsky_utils.login(env.BSKY_USERNAME, env.BSKY_APP_PASSWORD);
+		const old_session = await env.KV.get(env.BSKY_USERNAME, 'text');
+		const session_str = await bsky_utils.login(env.BSKY_USERNAME, env.BSKY_APP_PASSWORD, old_session);
+		// パスワード認証を行った場合はKVに取得したセッションを保存する
+		if (session_str) {
+			await env.KV.put(env.BSKY_USERNAME, session_str);
+		}
+
 		await db.initializeDatabase(env.DB);
 
 		// Example API call
