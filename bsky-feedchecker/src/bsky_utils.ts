@@ -18,7 +18,7 @@ export async function login(bsky_username: string, bsky_app_password: string, se
 		await agent.resumeSession(oldSessionData);
 		if (agent.session) {
 			console.log('Session resumed successfully.');
-			return;
+			return JSON.stringify(agent.session);
 		}
 	}
 
@@ -44,24 +44,11 @@ export async function resumeSession(savedSession: AtpSessionData): Promise<void>
 }
 
 // Blueskyに指定されたメッセージをポストする
-export async function postMessage(message: string, bsky_username: string, bsky_app_password: string): Promise<void> {
-	console.log(`Message: ${message} sent to recipient ID: ${bsky_username}`);
-
-	const response = await fetch('https://api.bsky.social/v1/messages', {
-		method: 'POST',
-		headers: {
-			Authorization: `Bearer ${bsky_app_password}`,
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({
-			recipientId: bsky_username,
-			message: message,
-		}),
+export async function postMessage(message: string): Promise<void> {
+	agent.post({
+		$type: 'app.bsky.feed.post',
+		text: message,
 	});
 
-	if (!response.ok) {
-		throw new Error(`Failed to send message: ${response.statusText}`);
-	}
-	console.log('Message sent successfully.');
 	return;
 }

@@ -46,7 +46,7 @@ export default {
 		const old_session = await env.KV.get(env.BSKY_USERNAME, 'text');
 		const session_str = await bsky_utils.login(env.BSKY_USERNAME, env.BSKY_APP_PASSWORD, old_session);
 		// パスワード認証を行った場合はKVに取得したセッションを保存する
-		if (session_str) {
+		if (session_str && session_str !== old_session) {
 			await env.KV.put(env.BSKY_USERNAME, session_str);
 		}
 
@@ -83,6 +83,8 @@ export default {
 
 			// console.log(`Title: ${title}, Link: ${link}, Media Thumbnail: ${mediaThumbnail}, Publication Date: ${pubDate}`);
 		}
+
+		// bsky_utils.postMessage('test');
 
 		// console.log(`trigger fired at ${event.cron}: ${wasSuccessful}`);
 	},
