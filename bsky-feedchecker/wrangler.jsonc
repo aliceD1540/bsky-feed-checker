@@ -25,7 +25,14 @@
 			"binding": "KV",
 			"id": "46f5a04f2e954f539ec383e0029274f1"
 		}
-	]
+	],
+	/**
+	 * Blueskyの認証情報（ローカル動作確認用、パスワードは実際使える値を設定したままコミットしないこと）
+	 */
+	"vars": {
+		"BSKY_USERNAME": "beta.project-grimoire.dev"
+		// "BSKY_APP_PASSWORD": "password",
+	}
 
 	/**
 	 * Smart Placement

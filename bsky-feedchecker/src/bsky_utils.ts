@@ -33,16 +33,6 @@ export async function login(bsky_username: string, bsky_app_password: string, se
 	return JSON.stringify(agent.session);
 }
 
-// セッションを復元する
-export async function resumeSession(savedSession: AtpSessionData): Promise<void> {
-	const session = await agent.resumeSession(savedSession);
-	if (session) {
-		console.log('Session resumed successfully.');
-	} else {
-		console.log('Failed to resume session.');
-	}
-}
-
 // Blueskyに指定されたメッセージをポストする
 export async function postMessage(message: string): Promise<void> {
 	agent.post({
