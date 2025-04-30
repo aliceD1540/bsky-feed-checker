@@ -20,6 +20,7 @@ import { KVNamespace } from '@cloudflare/workers-types';
 import { DOMParser } from 'xmldom';
 import * as db from './db';
 import * as bsky_utils from './bsky_utils';
+import { Articles, Feeds } from 'data-models';
 
 // Define the Env interface to include the D1 binding
 interface Env {
@@ -47,7 +48,7 @@ export default {
 		const session_str = await bsky_utils.login(env.BSKY_USERNAME, env.BSKY_APP_PASSWORD, old_session);
 		// パスワード認証を行った場合はKVに取得したセッションを保存する
 		if (session_str && session_str !== old_session) {
-			await env.KV.put(env.BSKY_USERNAME, session_str);
+			env.KV.put(env.BSKY_USERNAME, session_str);
 		}
 
 		await db.initializeDatabase(env.DB);
@@ -83,6 +84,31 @@ export default {
 
 			// console.log(`Title: ${title}, Link: ${link}, Media Thumbnail: ${mediaThumbnail}, Publication Date: ${pubDate}`);
 		}
+
+		// itemsをmodels.Articles型に変換
+		const articles: Articles[] = [];
+		for (let i = 0; i < items.length; i++) {
+			const title = items[i].getElementsByTagName('title')[0].textContent;
+			const link = items[i].getElementsByTagName('link')[0].textContent;
+			const mediaThumbnail = items[i].getElementsByTagName('media:thumbnail')[0]?.textContent;
+			const pubDate = items[i].getElementsByTagName('pubDate')[0]?.textContent
+				? parseDate(items[i].getElementsByTagName('pubDate')[0].textContent!)
+				: null;
+
+			if (title && link && mediaThumbnail && pubDate) {
+				articles.push({
+					id: null,
+					feed_id: 1, // あくまで将来的に使用するカラムなので仮のIDを設定
+					title: title,
+					link: link,
+					thumbnail: mediaThumbnail,
+					pub_date: pubDate,
+				});
+			}
+		}
+		// DBからitemsを検索、存在しないitemを取得＆DBに保存
+		const notExists = await db.checkItemExists(env.DB, articles);
+		console.log('notExists:', notExists);
 
 		// bsky_utils.postMessage('test');
 
