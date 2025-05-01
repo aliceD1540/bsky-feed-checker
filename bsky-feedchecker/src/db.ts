@@ -37,16 +37,29 @@ export async function initializeDatabase(db: D1Database): Promise<void> {
 	}
 }
 
-export async function selectFeeds(db: D1Database): Promise<any[]> {
-	const feeds = await db.prepare('SELECT * FROM feeds;').all();
-	return feeds.results || [];
+/**
+ * articlesテーブルから古いレコードを削除した上でVACUUM、データベースのサイズを最適化する
+ * @param db
+ */
+export async function vacuumDatabase(db: D1Database): Promise<void> {
+	// Check if the table exists
+	const tableCheck = await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='articles';").first();
+	if (tableCheck) {
+		// Perform the VACUUM operation
+		await db.prepare("DELETE FROM articles WHERE pub_date < datetime('now', '-30 days');").run();
+		await db.prepare('VACUUM;').run();
+		console.log('Database vacuumed successfully.');
+	} else {
+		console.log('Table "articles" does not exist, skipping VACUUM.');
+	}
 }
 
-export async function insertFeed(db: D1Database, url: string): Promise<void> {
-	await db.prepare('INSERT INTO feeds (url) VALUES (?);').bind(url).run();
-}
-
-// Articlesテーブルを検索し、レコードとして存在しない場合は新規に追加、追加したレコードを返す
+/**
+ * Articlesテーブルを検索し、レコードとして存在しない場合は新規に追加、追加したレコードを返す
+ * @param db
+ * @param articles
+ * @returns {Promise<Articles[]>}
+ */
 export async function checkItemExists(db: D1Database, articles: Articles[]): Promise<Articles[]> {
 	const results: Articles[] = [];
 	const links = articles.map((article) => article.link);
@@ -74,7 +87,7 @@ export async function checkItemExists(db: D1Database, articles: Articles[]): Pro
 				feed_id: feed_id,
 				title: title,
 				link: link,
-				thumbnail: thumbnail,
+				thumbnail: thumbnail ?? null,
 				pub_date: pub_date,
 			});
 		}
