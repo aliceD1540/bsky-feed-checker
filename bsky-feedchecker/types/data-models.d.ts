@@ -4,7 +4,7 @@ declare module 'data-models' {
 		feed_id: number;
 		title: string;
 		link: string;
-		thumbnail: string;
+		thumbnail: string | null;
 		pub_date: Date;
 	}
 	export interface Feeds {

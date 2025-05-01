@@ -74,17 +74,6 @@ export default {
 		const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
 		const items = xmlDoc.getElementsByTagName('item');
 
-		for (let i = 0; i < items.length; i++) {
-			const title = items[i].getElementsByTagName('title')[0].textContent;
-			const link = items[i].getElementsByTagName('link')[0].textContent;
-			const mediaThumbnail = items[i].getElementsByTagName('media:thumbnail')[0]?.textContent;
-			const pubDate = items[i].getElementsByTagName('pubDate')[0]?.textContent
-				? parseDate(items[i].getElementsByTagName('pubDate')[0].textContent!)
-				: null;
-
-			// console.log(`Title: ${title}, Link: ${link}, Media Thumbnail: ${mediaThumbnail}, Publication Date: ${pubDate}`);
-		}
-
 		// itemsをmodels.Articles型に変換
 		const articles: Articles[] = [];
 		for (let i = 0; i < items.length; i++) {
@@ -95,13 +84,13 @@ export default {
 				? parseDate(items[i].getElementsByTagName('pubDate')[0].textContent!)
 				: null;
 
-			if (title && link && mediaThumbnail && pubDate) {
+			if (title && link && pubDate) {
 				articles.push({
 					id: null,
 					feed_id: 1, // あくまで将来的に使用するカラムなので仮のIDを設定
 					title: title,
 					link: link,
-					thumbnail: mediaThumbnail,
+					thumbnail: mediaThumbnail ?? null,
 					pub_date: pubDate,
 				});
 			}
