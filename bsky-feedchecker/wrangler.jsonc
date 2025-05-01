@@ -11,7 +11,7 @@
 		"enabled": true
 	},
 	"triggers": {
-		"crons": ["* * * * *"]
+		"crons": ["*/5 * * * *"]
 	},
 	"d1_databases": [
 		{
@@ -31,7 +31,6 @@
 	 */
 	"vars": {
 		"BSKY_USERNAME": "beta.project-grimoire.dev"
-		// "BSKY_APP_PASSWORD": "password",
 	}
 
 	/**
