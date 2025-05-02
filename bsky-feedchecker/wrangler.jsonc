@@ -25,14 +25,14 @@
 			"binding": "KV",
 			"id": "46f5a04f2e954f539ec383e0029274f1"
 		}
-	],
+	]
 	/**
 	 * Blueskyの認証情報（ローカル動作確認用、実際のものはWorkersの設定側に持たせる）
 	 */
-	"vars": {
-		"BSKY_USERNAME": "<your_username_here>",
-		"BSKY_APP_PASSWORD": "<your_app_password_here>"
-	}
+	// "vars": {
+	// 	"BSKY_USERNAME": "<your_username_here>",
+	// 	"BSKY_APP_PASSWORD": "<your_app_password_here>"
+	// }
 
 	/**
 	 * Smart Placement
