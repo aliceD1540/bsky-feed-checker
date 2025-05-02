@@ -92,15 +92,17 @@ export default {
 		console.log('notExists:', notExists);
 
 		for (const article of notExists) {
-			await bsky_utils
-				.postMessageWithCard('noteで新しい記事を書きました', {
-					title: article.title,
-					link: article.link,
-					thumb_url: article.thumbnail,
-				})
-				.catch((error) => {
-					console.error('Error posting message:', error);
-				});
+			ctx.waitUntil(
+				bsky_utils
+					.postMessageWithCard('noteで新しい記事を書きました', {
+						title: article.title,
+						link: article.link,
+						thumb_url: article.thumbnail,
+					})
+					.catch((error) => {
+						console.error('Error posting message:', error);
+					})
+			);
 		}
 	},
 } satisfies ExportedHandler<Env>;
