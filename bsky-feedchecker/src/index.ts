@@ -53,10 +53,6 @@ export default {
 
 		await db.initializeDatabase(env.DB);
 
-		// Example API call
-		// let resp = await fetch('https://api.cloudflare.com/client/v4/ips');
-		// let wasSuccessful = resp.ok ? 'success' : 'fail';
-
 		// RSSを取得
 		const rssUrl = 'https://note.com/project_grimoire/rss';
 		const response = await fetch(rssUrl);
@@ -64,10 +60,6 @@ export default {
 			throw new Error(`Failed to fetch RSS feed: ${response.statusText}`);
 		}
 		const xmlText = await response.text();
-
-		// console.log(xmlText);
-
-		// console.log(response.body);
 
 		// xmltextをパースしてtitleとlinkとmedia:thumbnailを取得
 		const parser = new DOMParser();
@@ -100,15 +92,16 @@ export default {
 		console.log('notExists:', notExists);
 
 		for (const article of notExists) {
-			await bsky_utils.postMessageWithCard('noteで新しい記事を書きました', {
-				title: article.title,
-				link: article.link,
-				thumb_url: article.thumbnail,
-			});
+			bsky_utils
+				.postMessageWithCard('noteで新しい記事を書きました', {
+					title: article.title,
+					link: article.link,
+					thumb_url: article.thumbnail,
+				})
+				.catch((error) => {
+					console.error('Error posting message:', error);
+				});
 		}
-		// bsky_utils.postMessage('test');
-
-		// console.log(`trigger fired at ${event.cron}: ${wasSuccessful}`);
 	},
 } satisfies ExportedHandler<Env>;
 
