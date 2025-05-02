@@ -27,10 +27,11 @@
 		}
 	],
 	/**
-	 * Blueskyの認証情報（ローカル動作確認用、パスワードは実際使える値を設定したままコミットしないこと）
+	 * Blueskyの認証情報（ローカル動作確認用、実際のものはWorkersの設定側に持たせる）
 	 */
 	"vars": {
-		"BSKY_USERNAME": "beta.project-grimoire.dev"
+		"BSKY_USERNAME": "<your_username_here>",
+		"BSKY_APP_PASSWORD": "<your_app_password_here>"
 	}
 
 	/**
