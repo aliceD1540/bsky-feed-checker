@@ -92,7 +92,7 @@ export default {
 		console.log('notExists:', notExists);
 
 		for (const article of notExists) {
-			bsky_utils
+			await bsky_utils
 				.postMessageWithCard('noteで新しい記事を書きました', {
 					title: article.title,
 					link: article.link,
