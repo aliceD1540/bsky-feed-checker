@@ -99,6 +99,13 @@ export default {
 		const notExists = await db.checkItemExists(env.DB, articles);
 		console.log('notExists:', notExists);
 
+		for (const article of notExists) {
+			await bsky_utils.postMessageWithCard('noteで新しい記事を書きました', {
+				title: article.title,
+				link: article.link,
+				thumb_url: article.thumbnail,
+			});
+		}
 		// bsky_utils.postMessage('test');
 
 		// console.log(`trigger fired at ${event.cron}: ${wasSuccessful}`);

@@ -46,3 +46,44 @@ export async function postMessage(message: string): Promise<void> {
 
 	return;
 }
+
+export async function postMessageWithCard(
+	message: string,
+	card: {
+		title: string;
+		link: string;
+		thumb_url: string | null;
+	}
+): Promise<void> {
+	// thumb_urlから画像を取得、Blobに変換
+	let thumb_img: Blob | null = null;
+	if (card.thumb_url) {
+		const response = await fetch(card.thumb_url);
+		if (response.ok) {
+			thumb_img = await response.blob();
+		} else {
+			// 画像の取得に失敗した場合はnullを代入
+			thumb_img = null;
+		}
+	}
+	// Blobをアップロード
+	let response = null;
+	if (thumb_img) {
+		response = await agent.uploadBlob(thumb_img);
+	}
+	agent.post({
+		$type: 'app.bsky.feed.post',
+		text: message,
+		embed: {
+			$type: 'app.bsky.embed.external',
+			external: {
+				uri: card.link,
+				title: card.title,
+				description: '',
+				...(response ? { thumb: response.data.blob } : {}),
+			},
+		},
+	});
+
+	return;
+}
