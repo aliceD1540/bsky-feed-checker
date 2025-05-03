@@ -55,6 +55,8 @@ export async function postMessageWithCard(
 		thumb_url: string | null;
 	}
 ): Promise<void> {
+	console.log('postMessageWithCard called with:', { message, card });
+
 	// thumb_urlから画像を取得、Blobに変換
 	let thumb_img: Blob | null = null;
 	if (card.thumb_url) {
