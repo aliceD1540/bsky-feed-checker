@@ -16,14 +16,14 @@
 	"d1_databases": [
 		{
 			"binding": "DB",
-			"database_name": "bsky-feedchecker-db",
-			"database_id": "54af7eba-6f75-4118-99d3-61bfdd8bc397"
+			"database_name": "<your_database_name>",
+			"database_id": "<your_database_id>"
 		}
 	],
 	"kv_namespaces": [
 		{
 			"binding": "KV",
-			"id": "46f5a04f2e954f539ec383e0029274f1"
+			"id": "<your_kv_id>"
 		}
 	]
 	/**
