@@ -1,3 +1,0 @@
-atproto
-Flask
-python-dotenv
