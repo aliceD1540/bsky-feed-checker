@@ -92,7 +92,7 @@ export default {
 		console.log('notExists:', notExists);
 
 		for (const article of notExists) {
-			await bsky_utils
+			const postSuccess = await bsky_utils
 				.postMessageWithCard('noteで新しい記事を書きました', {
 					title: article.title,
 					link: article.link,
@@ -101,6 +101,7 @@ export default {
 				.catch((error) => {
 					console.error('Error posting message:', error);
 				});
+			console.log('postSuccess:', postSuccess);
 		}
 		console.log('Scheduled event processed successfully. notExists.length:', notExists.length);
 	},

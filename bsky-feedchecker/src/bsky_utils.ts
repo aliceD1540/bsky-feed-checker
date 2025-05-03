@@ -54,7 +54,7 @@ export async function postMessageWithCard(
 		link: string;
 		thumb_url: string | null;
 	}
-): Promise<void> {
+): Promise<boolean> {
 	console.log('postMessageWithCard called with:', { message, card });
 
 	// thumb_urlから画像を取得、Blobに変換
@@ -73,19 +73,24 @@ export async function postMessageWithCard(
 	if (thumb_img) {
 		response = await agent.uploadBlob(thumb_img);
 	}
-	agent.post({
-		$type: 'app.bsky.feed.post',
-		text: message,
-		embed: {
-			$type: 'app.bsky.embed.external',
-			external: {
-				uri: card.link,
-				title: card.title,
-				description: '',
-				...(response ? { thumb: response.data.blob } : {}),
+	const postResponse = await agent
+		.post({
+			$type: 'app.bsky.feed.post',
+			text: message,
+			embed: {
+				$type: 'app.bsky.embed.external',
+				external: {
+					uri: card.link,
+					title: card.title,
+					description: '',
+					...(response ? { thumb: response.data.blob } : {}),
+				},
 			},
-		},
-	});
+		})
+		.catch((error) => {
+			console.error('Error posting message:', error);
+			return false;
+		});
 
-	return;
+	return true;
 }
