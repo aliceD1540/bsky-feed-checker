@@ -1,6 +1,7 @@
 ## なにこれ
 
 Cloudflare Workersを使って、RSSフィードをチェックして新着があったらBlueskyにポストするBotです。
+noteなどに自分の記事を投稿したらBlueskyに自動投稿を行う用途を想定しています。
 
 ## 構造
 
